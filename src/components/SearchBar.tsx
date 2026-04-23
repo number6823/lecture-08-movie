@@ -1,46 +1,51 @@
-import { useNavigate } from "react-router";
-import { type ChangeEvent, type FormEvent, useState } from "react";
 import styled from "styled-components";
+import { useState, type SubmitEvent, type ChangeEvent } from "react";
+import { useNavigate } from "react-router";
 
-const BOX = styled.form`
-display: flex;
-gap: 10px;
-width: 100%;`
+const Wrap = styled.form`
+    display: flex;
+    gap: 10px;
+`;
 
 const Input = styled.input`
-flex: 1;
-padding: 12px;
-border-radius: 8px;
-border: 1px solid #ccc;
-`
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+`;
 
 const Button = styled.button`
-padding: 12px 18px;
-border: none;
-background-color: black;
-color: white;
-border-radius: 8px;
-cursor: pointer;`
+    padding: 12px;
+    background-color: #ff5959;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+`;
 
 function SearchBar() {
-    const navigate = useNavigate();
     const [keyword, setKeyword] = useState("");
+    const navigate = useNavigate();
 
-    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const moveToSearch = (event: SubmitEvent<HTMLFormElement>) => {
+        // 사용자를 강제이동
         event.preventDefault();
+        if (!keyword.trim()) return;
+        navigate(`/search?keyword=${encodeURIComponent(keyword)}`);
+        // 사용자를 이동 시키는데 (Link나 a태그나, navigate), 그 주소에 첫 글자가 / 로 시작하지 않으면
+        // 지금 현재의 주소 + search 로 이동시킴
+        // 그 주소에 첫 글자가 / 로 시작하면
+        // /search 로 이동시킴
+    };
 
-        const k = keyword.trim();
-        if (!k) return;
-        navigate(`/search?keyword=${encodeURIComponent(k)}`);
-    }; ;
-    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const changeInput = (event: ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
         setKeyword(event.target.value);
     };
+
     return (
-        <BOX onSubmit={onSubmit}>
-            <Input onChange={onChange} />
-            <Button type={"submit"}>검색</Button>
-        </BOX>
+        <Wrap onSubmit={moveToSearch}>
+            <Input onChange={changeInput} />
+            <Button type={"submit"}>Search</Button>
+        </Wrap>
     );
 }
 

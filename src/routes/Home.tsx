@@ -1,15 +1,15 @@
-import SearchBar from "../components/SearchBar.tsx";
 import styled from "styled-components";
+import SearchBar from "../components/SearchBar.tsx";
 
 const Wrap = styled.div`
-    padding: 50px;
+    padding: 30px;
 `;
 
 function Home() {
     return (
         <Wrap>
-            <h2>movie Search!</h2>
-            <SearchBar />
+            <h1>movie Search!</h1>
+           <SearchBar />
         </Wrap>
     );
 }

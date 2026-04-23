@@ -1,48 +1,8 @@
-import { useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
+import SearchBar from "../components/SearchBar.tsx";
+import MovieCard from "../components/MovieCard.tsx";
 import styled from "styled-components";
-import { Link } from "react-router";
-type ApiResponseType = { Search: MovieItem [] };
-
-const Wrap = styled.div`
-padding: 30px;
-`
-
-const Cover = styled.img`
-width: 300px;
-height: 446px;
-object-fit: cover;
-border-radius: 5px;
-    border: 0.5px solid #ddd;
-    
-`
-
-const Title = styled.div`
-display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
-    justify-content: center;
-`
-
-const TitleText = styled(Link)`
-font-size: 20px;
-font-weight: 700;
-color: darkgrey;
-    transition: all 0.2s;
-    margin: 20px;
-    text-decoration: none;
-&:hover  {
-    color: aqua;
-}`
-
-const Stylelink =  styled.div`
-text-decoration: none;
-`
-
-const Year = styled.h3`
-font-size: 20px;
-color: slategrey;
-margin: 20px;`
 
 export type MovieItem = {
     imdbID: string;
@@ -51,39 +11,63 @@ export type MovieItem = {
     Year: string;
 };
 
+type ApiResponseType = { Search: MovieItem[] };
+
+const Wrap = styled.div`
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+`;
+
+const List = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 100px;
+`;
+
 function Search() {
-    const [params] = useSearchParams();
-    const k = params.get("keyword");
     const [list, setList] = useState<MovieItem[]>([]);
+    const [loading, setLoading] = useState(true); // loading에 대한 상태값 관리
+    const [error, setError] = useState(""); // 에러가 났을 때 화면에 출력해야 하는 string
+
+    const [searchParams] = useSearchParams();
+    const k = searchParams.get("keyword");
 
     useEffect(() => {
-        if(!k) {
-            return;
-        }
+        if (!k) return;
+
+        setLoading(true);
+        setList([]);
+        setError("");
+
         fetch(`https://www.omdbapi.com/?apikey=6a0a8eb4&s=${k}`)
             .then(res => res.json())
             .then((json: ApiResponseType) => {
-                setList(json.Search)
+                setList(json.Search);
+                setLoading(false);
             })
-            .catch((err) => {
+            .catch(err => {
                 console.log(err);
+                setError("검색하는데 오류가 발생하였습니다.");
+                setLoading(false);
             });
-    }, [k])
+    }, [k]);
 
     return (
         <Wrap>
-            <h3>검색 결과: {k}</h3>
-            <Title>
+            <h2>검색 키워드 : {k}</h2>
+
+            {loading && <p>Loading...</p>}
+            {error && <p>{error}</p>}
+
+            <SearchBar />
+
+            <List>
                 {list.map((value, index) => (
-                    <Stylelink key={index}>
-                        <div>
-                            <TitleText to={`/detail/${value.imdbID}`}>{value.Title}</TitleText>
-                            <Year>{value.Year}</Year>
-                        </div>
-                        <Cover src={value.Poster} alt={value.Title} />
-                    </Stylelink>
+                    <MovieCard movie={value} key={index} />
                 ))}
-            </Title>
+            </List>
         </Wrap>
     );
 }

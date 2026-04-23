@@ -13,72 +13,69 @@ type MovieDetail = {
 
 const Wrap = styled.div`
     padding: 40px;
-`;
 
-const BackBtn = styled.button`
-    padding: 10px 25px;
-    border: none;
-    background: #222;
-    color: white;
-    cursor: pointer;
-    margin-bottom: 25px;
-    border-radius: 8px;
-    &:hover {
-        background: #444;
+    img {
+        width: 240px;
+        border-radius: 12px;
     }
 `;
 
-const Box = styled.div`
-    display: flex;
-    gap: 65px;
-    align-items: flex-start;
+const BackButton = styled.button`
+    display: block;
+    margin-bottom: 20px;
+    background: none;
+    border: none;
+    color: #ff5959;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+        text-decoration: underline;
+    }
 `;
 
-const Cover = styled.img`
-border-radius: 8px;`
+const Plot = styled.p`
+    line-height: 1.6;
+    margin-top: 20px;
+`;
 
 function Detail() {
     const { id } = useParams();
+    const [movie, setMovie] = useState<MovieDetail | null>(null);
     const navigate = useNavigate();
-    const [movies, setMovies] = useState<MovieDetail | null>(null);
 
     useEffect(() => {
         if (!id) return;
         fetch(`https://www.omdbapi.com/?apikey=6a0a8eb4&i=${id}&plot=full`)
             .then(res => res.json())
-            .then(json => {
-                setMovies(json);
+            .then((json: MovieDetail) => {
+                setMovie(json);
             })
             .catch(err => {
                 console.log(err);
             });
     }, [id]);
-    if (!movies) return <h3>Loading...</h3>;
+
+    if (!movie) return <p>Loading...</p>;
 
     return (
         <Wrap>
-            <BackBtn
-                onClick={() => {
-                    navigate(-1);
-                }}>
-                &larr; 뒤로 가기
-            </BackBtn>
-            <div style={{ marginLeft: "50px" }}>
-                <h2>{movies.Title}</h2>
-                <p style={{fontSize:'18px', fontWeight:'600', color:'#46482b'}}>개봉 날짜:{movies.Year}</p>
-            </div>
-            <Box>
-                {movies.Poster ? <Cover src={movies.Poster} /> : <div>no Cover</div>}
-                <div>
-                    <h3 style={{ marginBottom: "20px" }}>영화 정보</h3>
-                    <div style={{display: 'flex', gap: '20px'}}>
-                        <p>장르: {movies.Genre}</p>
-                        <p>감독: {movies.Director}</p>
-                    </div>
-                    <h1>줄거리</h1>
-                    <p style={{ lineHeight: "2.5" }}>{movies.Plot}</p>
-                </div>
-            </Box>
+            <BackButton onClick={() => navigate(-1)}>&larr; Back</BackButton>
+
+            <img src={movie.Poster} alt={movie.Title} />
+
+            <h1>{movie.Title}</h1>
+            <p>
+                <strong>Year:</strong> {movie.Year}
+            </p>
+            <p>
+                <strong>Genre:</strong> {movie.Genre}
+            </p>
+            <p>
+                <strong>Director:</strong> {movie.Director}
+            </p>
+            <Plot>{movie.Plot}</Plot>
         </Wrap>
     );
 }
