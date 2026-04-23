@@ -23,7 +23,7 @@ const List = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    margin-top: 100px;
+    margin-top: 50px;
 `;
 
 function Search() {
@@ -56,7 +56,7 @@ function Search() {
 
     return (
         <Wrap>
-            <h2>검색 키워드 : {k}</h2>
+            <h2 style={{marginTop: '20px'}}>검색 키워드 : {k}</h2>
 
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}

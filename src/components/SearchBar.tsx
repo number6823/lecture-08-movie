@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 const Wrap = styled.form`
     display: flex;
     gap: 10px;
+    margin-top: 20px;
 `;
 
 const Input = styled.input`
